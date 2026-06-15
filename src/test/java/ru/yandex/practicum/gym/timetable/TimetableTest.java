@@ -83,7 +83,51 @@ class TimetableTest {
         assertTrue(sessions14.isEmpty());
     }
 
-    // Дополнительные тесты
+    // ===== НОВЫЕ ТЕСТЫ для getTrainingSessionsForDayAndTime =====
+
+    @Test
+    void testGetTrainingSessionsForDayAndTimeNotFound() {
+        Timetable timetable = new Timetable();
+
+        Group group = new Group("Акробатика для детей", Age.CHILD, 60);
+        Coach coach = new Coach("Васильев", "Николай", "Сергеевич");
+        TrainingSession session = new TrainingSession(group, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+
+        timetable.addNewTrainingSession(session);
+
+        // Запрашиваем другой день
+        List<TrainingSession> tuesdaySessions = timetable.getTrainingSessionsForDayAndTime(
+                DayOfWeek.TUESDAY, new TimeOfDay(13, 0));
+
+        assertTrue(tuesdaySessions.isEmpty());
+    }
+
+    @Test
+    void testGetTrainingSessionsForDayAndTimeMultipleSessionsSameTime() {
+        Timetable timetable = new Timetable();
+
+        Group group1 = new Group("Акробатика для детей", Age.CHILD, 60);
+        Group group2 = new Group("Гимнастика для взрослых", Age.ADULT, 90);
+        Coach coach1 = new Coach("Иванов", "Иван", "Иванович");
+        Coach coach2 = new Coach("Петров", "Петр", "Петрович");
+
+        TrainingSession session1 = new TrainingSession(group1, coach1,
+                DayOfWeek.WEDNESDAY, new TimeOfDay(15, 0));
+        TrainingSession session2 = new TrainingSession(group2, coach2,
+                DayOfWeek.WEDNESDAY, new TimeOfDay(15, 0));
+
+        timetable.addNewTrainingSession(session1);
+        timetable.addNewTrainingSession(session2);
+
+        List<TrainingSession> sessions = timetable.getTrainingSessionsForDayAndTime(
+                DayOfWeek.WEDNESDAY, new TimeOfDay(15, 0));
+
+        assertEquals(2, sessions.size());
+        assertTrue(sessions.contains(session1));
+        assertTrue(sessions.contains(session2));
+    }
+
 
     @Test
     void testMultipleSessionsAtSameTime() {
